@@ -8,7 +8,11 @@ public class Driver
     
     [Required]
     [StringLength(100)]
-    public string FullName { get; set; }
+    public string FirstName { get; set; }
+    
+    [Required]
+    [StringLength(100)]
+    public string LastName { get; set; }
         
     [Required]
     [EmailAddress]

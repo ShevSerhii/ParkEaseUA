@@ -22,8 +22,10 @@ public class Reservation
         
     public ReservationStatus Status { get; set; }
 
+    
     public Driver Driver { get; set; }
     public ParkingLot ParkingLot { get; set; }
+    public Payment Payment { get; set; }
 }
 
 public enum ReservationStatus
