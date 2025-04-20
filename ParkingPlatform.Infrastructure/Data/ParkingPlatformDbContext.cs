@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ParkingPlatform.Infrastructure.Models;
 
 namespace ParkingPlatform.Infrastructure
 {
-    public class ParkingPlatformDbContext : DbContext
+    public class ParkingPlatformDbContext : IdentityDbContext<ApplicationUser>
     {
         public ParkingPlatformDbContext(DbContextOptions<ParkingPlatformDbContext> options)
             : base(options)
@@ -19,6 +20,8 @@ namespace ParkingPlatform.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Driver>()
                 .HasMany(d => d.Reservations)
                 .WithOne(r => r.Driver)
