@@ -15,6 +15,7 @@ namespace ParkingPlatform.Infrastructure
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<ParkingSpot> ParkingSpots { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,6 +43,11 @@ namespace ParkingPlatform.Infrastructure
                 .HasOne(p => p.Reservation)
                 .WithOne(r => r.Payment)
                 .HasForeignKey<Payment>(p => p.ReservationId);
+
+            modelBuilder.Entity<ParkingLot>()
+                .HasMany(p => p.ParkingSpots)
+                .WithOne(s => s.ParkingLot)
+                .HasForeignKey(s => s.ParkingLotId);
         }
     }
 }

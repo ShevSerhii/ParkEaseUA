@@ -21,4 +21,5 @@ public class ParkingLot
     public int TotalSpots { get; set; }
         
     public ICollection<Reservation> Reservations { get; set; }
+    public ICollection<ParkingSpot> ParkingSpots { get; set; }
 }
