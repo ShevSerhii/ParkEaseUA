@@ -9,11 +9,16 @@ namespace ParkingPlatform.Infrastructure.Services
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public AuthService(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IJwtTokenGenerator jwtTokenGenerator)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         public async Task<AuthResult> RegisterAsync(RegisterDto model)
@@ -58,6 +63,39 @@ namespace ParkingPlatform.Infrastructure.Services
             {
                 Success = true,
                 Message = "User registered successfully"
+            };
+        }
+
+        public async Task<AuthResult> LoginAsync(LoginDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return new AuthResult
+                {
+                    Success = false,
+                    Message = "Invalid email or password"
+                };
+            }
+
+            var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+            if (!isPasswordValid)
+            {
+                return new AuthResult
+                {
+                    Success = false,
+                    Message = "Invalid email or password"
+                };
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, userRoles);
+
+            return new AuthResult
+            {
+                Success = true,
+                Message = "Login successful",
+                Token = token
             };
         }
     }

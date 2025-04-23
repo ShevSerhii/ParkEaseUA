@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ParkingPlatform.Application.DTOs.Auth;
 using ParkingPlatform.Application.Interfaces;
 
@@ -34,5 +35,34 @@ namespace ParkingPlatform.WebAPI.Controllers
                 message = result.Message
             });
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto model)
+        {
+            var result = await _authService.LoginAsync(model);
+
+            if (!result.Success)
+            {
+                return BadRequest(new
+                {
+                    message = result.Message,
+                    errors = result.Errors
+                });
+            }
+
+            return Ok(new
+            {
+                message = result.Message,
+                token = result.Token
+            });
+        }
+        
+        [Authorize(Roles = "Driver")]
+        [HttpGet("only-driver")]
+        public IActionResult ForDriver()
+        {
+            return Ok("Welcome, driver!");
+        }
+
     }
 }

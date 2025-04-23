@@ -23,6 +23,7 @@ namespace ParkingPlatform.Infrastructure
 
             // Register application services
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
             return services;
         }
