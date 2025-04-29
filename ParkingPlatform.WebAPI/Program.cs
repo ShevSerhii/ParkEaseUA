@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using ParkingPlatform.Application.Settings;
 using ParkingPlatform.Infrastructure;
+using ParkingPlatform.WebAPI.Endpoints;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
@@ -13,11 +14,16 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 builder.Configuration
     .AddJsonFile("appsettings.Secret.json", optional: true, reloadOnChange: true);
 
-
 // Add Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "Parking Platform API",
+        Version = "v1"
+    });
+
     options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -44,9 +50,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// Controllers
-builder.Services.AddControllers();
-
 // Infrastructure DI: DbContext, Identity, Services
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -54,7 +57,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));
 
-// Reading secrets separately — without Get<JwtSettings>()
+// Reading secrets separately
 var config = builder.Configuration;
 var jwtSecret = config["JwtSettings:Secret"];
 var jwtIssuer = config["JwtSettings:Issuer"];
@@ -80,21 +83,25 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Parking Platform API v1");
+    });
 }
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); // JWT: first — Authentication
-app.UseAuthorization();  // second — Authorization
+app.UseAuthentication();
+app.UseAuthorization();
 
-// Map controller routes
-app.MapControllers();
+app.MapAuthEndpoints(); 
 
 app.Run();

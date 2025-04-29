@@ -21,8 +21,10 @@ namespace ParkingPlatform.Infrastructure.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<AuthResult> RegisterAsync(RegisterDto model)
+        public async Task<AuthResult> RegisterAsync(RegisterDto model, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
@@ -66,8 +68,10 @@ namespace ParkingPlatform.Infrastructure.Services
             };
         }
 
-        public async Task<AuthResult> LoginAsync(LoginDto model)
+        public async Task<AuthResult> LoginAsync(LoginDto model, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {

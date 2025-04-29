@@ -15,8 +15,15 @@ public class Notification
         
     [ForeignKey("Driver")]
     public int DriverId { get; set; }
-        
-    public bool IsRead { get; set; }
+
+    [Required]
+    public NotificationStatus status { get; set; } = NotificationStatus.Unread;
 
     public Driver Driver { get; set; }
+}
+
+public enum NotificationStatus
+{
+    Unread,
+    Read,
 }
