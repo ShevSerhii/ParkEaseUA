@@ -14,39 +14,19 @@ public static class AuthEndpoints
         {
             var result = await authService.RegisterAsync(model, cancellationToken);
 
-            if (!result.Success)
-            {
-                return Results.BadRequest(new
-                {
-                    message = result.Message,
-                    errors = result.Errors
-                });
-            }
-
-            return Results.Ok(new
-            {
-                message = result.Message
-            });
+            return result.Success
+                ? Results.Ok(new {massage = result.Message})
+                : Results.BadRequest(new {message = result.Message, errors = result.Errors });
+            
         });
 
         group.MapPost("/login", async (IAuthService authService, LoginDto model, CancellationToken cancellationToken = default) =>
         {
             var result = await authService.LoginAsync(model, cancellationToken);
 
-            if (!result.Success)
-            {
-                return Results.BadRequest(new
-                {
-                    message = result.Message,
-                    errors = result.Errors
-                });
-            }
-
-            return Results.Ok(new
-            {
-                message = result.Message,
-                token = result.Token
-            });
+            return result.Success
+                ? Results.Ok(new { massage = result.Message, token = result.Token })
+                : Results.BadRequest(new {message = result.Message, errors = result.Errors });
         });
 
         group.MapGet("/only-driver", [Authorize(Roles = "Driver")] () => Results.Ok("Welcome, driver!"));
