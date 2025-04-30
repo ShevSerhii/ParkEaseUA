@@ -21,7 +21,7 @@ namespace ParkingPlatform.Infrastructure.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<AuthResult> RegisterAsync(RegisterDto model, CancellationToken cancellationToken)
+        public async Task<AuthResult> RegisterAsync(RegisterDto model, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -68,7 +68,7 @@ namespace ParkingPlatform.Infrastructure.Services
             };
         }
 
-        public async Task<AuthResult> LoginAsync(LoginDto model, CancellationToken cancellationToken)
+        public async Task<AuthResult> LoginAsync(LoginDto model, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 

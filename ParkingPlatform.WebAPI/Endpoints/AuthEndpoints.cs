@@ -10,7 +10,7 @@ public static class AuthEndpoints
     {
         var group = app.MapGroup("/api/auth");
 
-        group.MapPost("/register", async (IAuthService authService, RegisterDto model, CancellationToken cancellationToken) =>
+        group.MapPost("/register", async (IAuthService authService, RegisterDto model, CancellationToken cancellationToken = default) =>
         {
             var result = await authService.RegisterAsync(model, cancellationToken);
 
@@ -29,7 +29,7 @@ public static class AuthEndpoints
             });
         });
 
-        group.MapPost("/login", async (IAuthService authService, LoginDto model, CancellationToken cancellationToken) =>
+        group.MapPost("/login", async (IAuthService authService, LoginDto model, CancellationToken cancellationToken = default) =>
         {
             var result = await authService.LoginAsync(model, cancellationToken);
 
@@ -49,9 +49,6 @@ public static class AuthEndpoints
             });
         });
 
-        group.MapGet("/only-driver", [Authorize(Roles = "Driver")] () =>
-        {
-            return Results.Ok("Welcome, driver!");
-        });
+        group.MapGet("/only-driver", [Authorize(Roles = "Driver")] () => Results.Ok("Welcome, driver!"));
     }
 }
