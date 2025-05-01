@@ -23,8 +23,6 @@ namespace ParkingPlatform.Infrastructure.Services
 
         public async Task<AuthResult> RegisterAsync(RegisterDto model, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
