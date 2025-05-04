@@ -1,23 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using ParkingPlatform.Application.DTOs.Auth;
 using ParkingPlatform.Application.Interfaces;
+using ParkingPlatform.WebAPI.Routes;
 
 namespace ParkingPlatform.WebAPI.Endpoints;
 
 public static class AuthEndpoints
 {
-    public static class Routes
-    {
-        public const string Base = "/api/auth";
-        public const string Register = "/register";
-        public const string Login = "/login";
-        public const string OnlyDriver = "/only-driver";
-    }
     public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup(Routes.Base);
+        var group = app.MapGroup(ApiRoutes.Base);
 
-        group.MapPost( Routes.Register, async (IAuthService authService, RegisterDto model, CancellationToken cancellationToken = default) =>
+        group.MapPost( ApiRoutes.Register, async (IAuthService authService, RegisterDto model, CancellationToken cancellationToken = default) =>
         {
             var result = await authService.RegisterAsync(model, cancellationToken);
 
@@ -27,7 +21,7 @@ public static class AuthEndpoints
             
         });
 
-        group.MapPost(Routes.Login, async (IAuthService authService, LoginDto model, CancellationToken cancellationToken = default) =>
+        group.MapPost(ApiRoutes.Login, async (IAuthService authService, LoginDto model, CancellationToken cancellationToken = default) =>
         {
             var result = await authService.LoginAsync(model, cancellationToken);
 
@@ -36,6 +30,6 @@ public static class AuthEndpoints
                 : Results.BadRequest(new {message = result.Message, errors = result.Errors });
         });
 
-        group.MapGet(Routes.OnlyDriver, [Authorize(Roles = "Driver")] () => Results.Ok("Welcome, driver!"));
+        group.MapGet(ApiRoutes.OnlyDriver, [Authorize(Roles = "Driver")] () => Results.Ok("Welcome, driver!"));
     }
 }
