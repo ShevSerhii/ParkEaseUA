@@ -21,12 +21,12 @@ namespace ParkingPlatform.Infrastructure.Services
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<AuthResult> RegisterAsync(RegisterDto model, CancellationToken cancellationToken = default)
+        public async Task<AuthResultDto> RegisterAsync(RegisterDto model, CancellationToken cancellationToken = default)
         {
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
             if (existingUser != null)
             {
-                return new AuthResult
+                return new AuthResultDto
                 {
                     Success = false,
                     Message = "User already exists"
@@ -44,7 +44,7 @@ namespace ParkingPlatform.Infrastructure.Services
             var result = await _userManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
             {
-                return new AuthResult
+                return new AuthResultDto
                 {
                     Success = false,
                     Errors = result.Errors.Select(e => e.Description),
@@ -59,21 +59,21 @@ namespace ParkingPlatform.Infrastructure.Services
 
             await _userManager.AddToRoleAsync(user, model.Role);
 
-            return new AuthResult
+            return new AuthResultDto
             {
                 Success = true,
                 Message = "User registered successfully"
             };
         }
 
-        public async Task<AuthResult> LoginAsync(LoginDto model, CancellationToken cancellationToken = default)
+        public async Task<AuthResultDto> LoginAsync(LoginDto model, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return new AuthResult
+                return new AuthResultDto
                 {
                     Success = false,
                     Message = "Invalid email or password"
@@ -83,7 +83,7 @@ namespace ParkingPlatform.Infrastructure.Services
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!isPasswordValid)
             {
-                return new AuthResult
+                return new AuthResultDto
                 {
                     Success = false,
                     Message = "Invalid email or password"
@@ -93,7 +93,7 @@ namespace ParkingPlatform.Infrastructure.Services
             var userRoles = await _userManager.GetRolesAsync(user);
             var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, userRoles);
 
-            return new AuthResult
+            return new AuthResultDto
             {
                 Success = true,
                 Message = "Login successful",

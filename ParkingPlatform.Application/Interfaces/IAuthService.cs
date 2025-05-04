@@ -4,7 +4,7 @@ namespace ParkingPlatform.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<AuthResult> RegisterAsync(RegisterDto model, CancellationToken cancellationToken = default);
-        Task<AuthResult> LoginAsync(LoginDto model, CancellationToken cancellationToken = default);
+        Task<AuthResultDto> RegisterAsync(RegisterDto model, CancellationToken cancellationToken = default);
+        Task<AuthResultDto> LoginAsync(LoginDto model, CancellationToken cancellationToken = default);
     }
 }

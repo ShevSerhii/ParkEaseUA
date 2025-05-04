@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using ParkingPlatform.Application.Comands;
 using ParkingPlatform.Application.DTOs.Auth;
-using ParkingPlatform.Application.Interfaces;
+using ParkingPlatform.Application.Queries;
 using ParkingPlatform.WebAPI.Routes;
 
 namespace ParkingPlatform.WebAPI.Endpoints;
@@ -11,9 +13,12 @@ public static class AuthEndpoints
     {
         var group = app.MapGroup(ApiRoutes.Base);
 
-        group.MapPost( ApiRoutes.Register, async (IAuthService authService, RegisterDto model, CancellationToken cancellationToken = default) =>
+        group.MapPost(ApiRoutes.Register, async (
+            ISender sender, 
+            RegisterDto model, 
+            CancellationToken cancellationToken = default) =>
         {
-            var result = await authService.RegisterAsync(model, cancellationToken);
+            var result = await sender.Send(new RegisterUserCommand(model), cancellationToken);
 
             return result.Success
                 ? Results.Ok(new {massage = result.Message})
@@ -21,9 +26,12 @@ public static class AuthEndpoints
             
         });
 
-        group.MapPost(ApiRoutes.Login, async (IAuthService authService, LoginDto model, CancellationToken cancellationToken = default) =>
+        group.MapPost(ApiRoutes.Login, async (
+            ISender sender, 
+            LoginDto model, 
+            CancellationToken cancellationToken = default) =>
         {
-            var result = await authService.LoginAsync(model, cancellationToken);
+            var result = await sender.Send(new GetJwtTokenQuery(model), cancellationToken);
 
             return result.Success
                 ? Results.Ok(new { massage = result.Message, token = result.Token })
