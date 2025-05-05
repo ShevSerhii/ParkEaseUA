@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ParkingPlatform.Application.Interfaces;
 using ParkingPlatform.Infrastructure.Models;
-using ParkingPlatform.Infrastructure.Services;
 
 namespace ParkingPlatform.Infrastructure
 {
@@ -20,11 +18,7 @@ namespace ParkingPlatform.Infrastructure
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ParkingPlatformDbContext>()
                 .AddDefaultTokenProviders();
-
-            // Register application services
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-
+            
             return services;
         }
     }

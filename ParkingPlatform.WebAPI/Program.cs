@@ -1,3 +1,4 @@
+using ParkingPlatform.Application.Comands;
 using ParkingPlatform.Infrastructure;
 using ParkingPlatform.WebAPI.Endpoints;
 using ParkingPlatform.WebAPI.Extensions;
@@ -11,6 +12,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerWithJwt();
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblyContaining<RegisterUserCommand>());
 
 var app = builder.Build();
 
