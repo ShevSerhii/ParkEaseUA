@@ -4,7 +4,7 @@ using ParkingPlatform.Application.Interfaces;
 
 namespace ParkingPlatform.Application.Comands;
 
-public class RegisterUserHandler(IAuthService authService) : IRequestHandler<RegisterUserCommand, AuthResultDto>
+public class RegisterUserCommandHandler(IAuthService authService) : IRequestHandler<RegisterUserCommand, AuthResultDto>
 {
     private readonly IAuthService _authService = authService;
 
