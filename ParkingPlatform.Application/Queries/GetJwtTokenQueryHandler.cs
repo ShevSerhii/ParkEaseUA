@@ -1,20 +1,57 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using ParkingPlatform.Application.DTOs.Auth;
-using ParkingPlatform.Application.Interfaces;
+using ParkingPlatform.Application.Helpers;
+using ParkingPlatform.Infrastructure.Models;
 
 namespace ParkingPlatform.Application.Queries;
 
 public class GetJwtTokenQueryHandler : IRequestHandler<GetJwtTokenQuery, AuthResultDto>
 {
-    private readonly IAuthService _authService;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IConfiguration _configuration;
 
-    public GetJwtTokenQueryHandler(IAuthService authService)
+    public GetJwtTokenQueryHandler(
+        UserManager<ApplicationUser> userManager,
+        IConfiguration configuration)
     {
-        _authService = authService;
+        _userManager = userManager;
+        _configuration = configuration;
     }
 
-    public Task<AuthResultDto> Handle(GetJwtTokenQuery request, CancellationToken cancellationToken)
+    public async Task<AuthResultDto> Handle(GetJwtTokenQuery request, CancellationToken cancellationToken = default)
     {
-        return _authService.LoginAsync(request.Model, cancellationToken);
+        var model = request.Model;
+
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            return new AuthResultDto
+            {
+                Success = false,
+                Message = "Invalid email or password"
+            };
+        }
+
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+        if (!isPasswordValid)
+        {
+            return new AuthResultDto
+            {
+                Success = false,
+                Message = "Invalid email or password"
+            };
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = JwtTokenHelper.GenerateToken(_configuration, user.Id, user.Email, roles);
+
+        return new AuthResultDto
+        {
+            Success = true,
+            Message = "Login successful",
+            Token = token
+        };
     }
 }
