@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System.Net;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using ParkingPlatform.Application.Comands;
 using ParkingPlatform.Application.DTOs.Auth;
@@ -24,6 +25,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
     {
         var model = request.Model;
 
+        // Check if user already exists
         var existingUser = await _userManager.FindByEmailAsync(model.Email);
         if (existingUser != null)
         {
@@ -34,12 +36,14 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
             };
         }
 
+        // Create new user
         var user = new ApplicationUser
         {
             Email = model.Email,
             UserName = model.Email,
             FirstName = model.FirstName,
-            LastName = model.LastName
+            LastName = model.LastName,
+            EmailConfirmed = true  // Auto-confirm email
         };
 
         var result = await _userManager.CreateAsync(user, model.Password);
@@ -53,6 +57,7 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, A
             };
         }
 
+        // Assign role
         if (!await _roleManager.RoleExistsAsync(model.Role))
         {
             await _roleManager.CreateAsync(new IdentityRole(model.Role));
