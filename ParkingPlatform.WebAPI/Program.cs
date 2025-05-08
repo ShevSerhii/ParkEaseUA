@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using ParkingPlatform.Application.Comands;
+using ParkingPlatform.Application.Interfaces;
+using ParkingPlatform.Application.Services;
 using ParkingPlatform.Infrastructure;
 using ParkingPlatform.WebAPI.Endpoints;
 using ParkingPlatform.WebAPI.Extensions;
@@ -14,6 +16,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerWithJwt();
+
+// Register email sender
+builder.Services.AddScoped<IEmailSender, DebugEmailSender>();
 
 // Set token lifespan
 builder.Services.Configure<DataProtectionTokenProviderOptions>(options =>

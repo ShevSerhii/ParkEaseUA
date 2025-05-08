@@ -1,6 +1,6 @@
 namespace ParkingPlatform.Application.DTOs.Auth;
 
-public class ResetPasswordDto
+public record ResetPasswordDto
 {
     public string Email { get; set; }
     public string Code { get; set; }

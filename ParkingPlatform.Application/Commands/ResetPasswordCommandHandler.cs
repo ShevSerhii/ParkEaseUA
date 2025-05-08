@@ -14,7 +14,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         _userManager = userManager;
     }
 
-    public async Task<AuthResultDto> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResultDto> Handle(ResetPasswordCommand request, CancellationToken cancellationToken = default)
     {
         var model = request.Model;
         
